@@ -54,7 +54,7 @@ class CaculateDate {
         /// Tìm tên gọi Chi của ngày
         fun getChiNgay(dd: Int, mm: Int, yy: Int): String {
             val jd = jdFromDate(dd, mm, yy)
-            return Chi.get((jd + 1) % 12)
+            return Chi.get((jd + 1) % 12 )
         }
 
 
