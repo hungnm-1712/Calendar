@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calendar</string>
+    <string name="app_name">Lịch</string>
 
     <string name="day_fragment">Day Fragment</string>
     <string name="month_fragment">Month Fragment</string>

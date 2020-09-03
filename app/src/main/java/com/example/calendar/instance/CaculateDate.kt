@@ -54,21 +54,28 @@ class CaculateDate {
         /// Tìm tên gọi Chi của ngày
         fun getChiNgay(dd: Int, mm: Int, yy: Int): String {
             val jd = jdFromDate(dd, mm, yy)
-            return Chi.get((jd + 1) % 12 )
+            return Chi.get((jd + 1) % 12)
         }
 
 
         /// Tìm tên gọi Chi của tháng (!tháng Âm Lịch)
         // mm la thang Am lich duoc tinh truoc do
         fun getChiThang(mm: Int): String? {
-            val tam = (mm) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
-            return Chi.get(tam-1)
+            var tam = (mm) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
+
+            if (mm < 12) {
+                tam--
+            }
+            return Chi.get(tam)
         }
 
         // mm la thang am lich, yy nam am lich
         fun getCanThang(mm: Int, yy: Int): String? {
-            val tam = (yy * 12 + mm + 2) % 10
-            return Can.get(tam-1)
+            var tam = (yy * 12 + mm + 2) % 10
+            if (mm < 12) {
+                tam --
+            }
+            return Can.get(tam)
         }
 
         fun jdToDate(jd: Long): ArrayList<Int> {
@@ -98,7 +105,6 @@ class CaculateDate {
             month = (m + 3 - 12 * (m / 10.0f).toInt()).toInt()
             year = (b * 100 + d - 4800 + (m / 10.0f).toInt()).toInt()
             var listDMY = arrayListOf<Int>(day, month, year)
-            Log.d(TAG, "JD to date :  ${listDMY.get(0)}/${listDMY.get(1)}/${listDMY.get(2)}")
             return listDMY
         }
 
@@ -113,8 +119,6 @@ class CaculateDate {
             if (jd < 2299161) {
                 jd = dd + ((153 * m + 2) / 5) + 365 * y + (y / 4) - 32083
             }
-
-            Log.d(TAG, "JD: $jd")
             return jd
         }
 

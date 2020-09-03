@@ -2,6 +2,7 @@ package com.example.calendar.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,33 +12,13 @@ import androidx.viewpager.widget.ViewPager
 import com.example.calendar.R
 import com.example.calendar.adapter.ViewPagerDayDetailAdapter
 import com.example.calendar.instance.CaculateDate
-import kotlinx.android.synthetic.main.dialog_chose_day.*
 import kotlinx.android.synthetic.main.dialog_chose_day.view.*
 import kotlinx.android.synthetic.main.fragment_day.*
-import java.text.SimpleDateFormat
 import java.util.*
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DayFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DayFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     val TAG = " TAG Day fragment"
@@ -55,6 +36,7 @@ class DayFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         calendar = Calendar.getInstance()
         dd = calendar?.get(Calendar.DAY_OF_MONTH)!!
         mm = calendar?.get(Calendar.MONTH)!! + 1
@@ -69,7 +51,6 @@ class DayFragment : Fragment() {
         for (i in 1..31) {
             listDay.add(i)
         }
-
 
         return inflater.inflate(R.layout.fragment_day, container, false)
     }
@@ -87,20 +68,51 @@ class DayFragment : Fragment() {
             try {
                 var builder = AlertDialog.Builder(context)
                 var show = LayoutInflater.from(context).inflate(R.layout.dialog_chose_day, null)
+
+                /**  Add data to spinner*/
+
                 var adapterDay =
                     ArrayAdapter(context!!, android.R.layout.simple_spinner_item, listDay)
                 adapterDay.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 show.spnDay?.adapter = adapterDay
+
                 var adapterMonth =
                     ArrayAdapter(context!!, android.R.layout.simple_spinner_item, listMonth)
                 adapterMonth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 show.spnMonth?.adapter = adapterMonth
+
                 var adapterYear =
                     ArrayAdapter(context!!, android.R.layout.simple_spinner_item, listYear)
                 adapterYear.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 show.spnYear?.adapter = adapterYear
 
+                /** Selection on spinner*/
 
+                show.spnDay.setSelection(dd - 1)
+                show.spnMonth.setSelection(mm - 1)
+                val spinnerPosition: Int = adapterYear.getPosition(yyyy)
+                show.spnYear.setSelection(spinnerPosition)
+
+                /** ChoseDay */
+
+                show.btnChoseDay.setOnClickListener {
+                    dd = show.spnDay.selectedItem.toString().toInt()
+                    mm = show.spnMonth.selectedItemPosition + 1
+                    yyyy = show.spnYear.selectedItem.toString().toInt()
+                    Log.d(TAG, "$dd $mm $yyyy")
+                    setTextToLayout(dd, mm, yyyy)
+//                    viewPagerDayDetail()
+                    alertDialog?.dismiss()
+                }
+
+                show.btnToday.setOnClickListener {
+                    dd = calendar?.get(Calendar.DAY_OF_MONTH)!!
+                    mm = calendar?.get(Calendar.MONTH)!! + 1
+                    yyyy = calendar?.get(Calendar.YEAR)!!
+                    setTextToLayout(dd, mm, yyyy)
+                    vpDayDetail.adapter?.notifyDataSetChanged()
+                    alertDialog?.dismiss()
+                }
                 builder.setView(show)
                 alertDialog = builder.show()
             } catch (e: Exception) {
@@ -111,12 +123,16 @@ class DayFragment : Fragment() {
     }
 
     private fun viewPagerDayDetail() {
+
         var adapterDetailDayViewPager =
-            ViewPagerDayDetailAdapter(context!!, fragmentManager!!, dd, mm, yyyy)
+            ViewPagerDayDetailAdapter(context!!, fragmentManager!!)
         vpDayDetail.adapter = adapterDetailDayViewPager
+        vpDayDetail.currentItem = Int.MAX_VALUE/2
+//        (vpDayDetail.adapter as ViewPagerDayDetailAdapter).notifyDataSetChanged()
 
         vpDayDetail.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
+
             }
 
             override fun onPageScrolled(
@@ -128,13 +144,13 @@ class DayFragment : Fragment() {
             }
 
             override fun onPageSelected(position: Int) {
+
             }
         })
     }
 
 
     fun setTextToLayout(day: Int, month: Int, year: Int) {
-        //tvTime.text = SimpleDateFormat("HH:mm").format(calendar?.time)
         tvThangDuong.text = "Tháng $mm"
         tvNamDuong.text = yyyy.toString()
 
@@ -157,18 +173,9 @@ class DayFragment : Fragment() {
             )}"
 
 //        tvGioHoangDao.text = SimpleDateFormat("HH:mm").format(calendar?.time)
-        tvChiGio.text = CaculateDate.getChiGio(calendar?.get(Calendar.HOUR)!!)
+        tvChiGio.text = CaculateDate.getChiGio(calendar?.get(Calendar.HOUR_OF_DAY)!!)
+        Log.d(TAG, "Hour: ${calendar?.get(Calendar.HOUR_OF_DAY)}")
 
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DayFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

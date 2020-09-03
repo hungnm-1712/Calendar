@@ -10,13 +10,12 @@ import com.example.calendar.fragment.MonthFragment
 
 class ViewPagerDayDetailAdapter(
     private val mContext: Context,
-    fm: FragmentManager,
-    var dd: Int, var mm: Int, var yyyy: Int
+    fm: FragmentManager
 ) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return  DayDetailFragment.newInstance(dd, mm, yyyy)
+        return  DayDetailFragment.newInstance(position)
     }
 
     override fun getCount(): Int {

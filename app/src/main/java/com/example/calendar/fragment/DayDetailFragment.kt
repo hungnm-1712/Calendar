@@ -10,12 +10,11 @@ import android.view.ViewGroup
 import com.example.calendar.R
 import com.example.calendar.instance.CaculateDate
 import kotlinx.android.synthetic.main.fragment_day_detail.*
+import java.text.FieldPosition
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-private const val ARG_PARAM3 = "param3"
+private const val ARG_POS = "pos"
 
 /**
  * A simple [Fragment] subclass.
@@ -25,16 +24,15 @@ private const val ARG_PARAM3 = "param3"
 class DayDetailFragment : Fragment() {
     // TODO: Rename and change types of parameters
     val TAG = "TAG Day detail fragment"
-    private var dd: Int? = null
-    private var mm: Int? = null
-    private var yyyy: Int? = null
+    private var pos: Int? = null
+//    private var dd: Int? = null
+//    private var mm: Int? = null
+//    private var yyyy: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            dd = it.getInt(ARG_PARAM1)
-            mm = it.getInt(ARG_PARAM2)
-            yyyy = it.getInt(ARG_PARAM3)
+            pos = it.getInt(ARG_POS)
         }
     }
 
@@ -47,8 +45,9 @@ class DayDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         try {
-            tvNgayDuong.text = dd.toString()
-            tvThu.text = CaculateDate.getThu(dd!!, mm!!, yyyy!!)
+
+            tvNgayDuong.text = (pos?.minus(Int.MAX_VALUE)).toString()
+//            tvThu.text = CaculateDate.getThu(dd!!, mm!!, yyyy!!)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -57,12 +56,10 @@ class DayDetailFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(param1: Int, param2: Int, param3: Int) =
+        fun newInstance(pos: Int) =
             DayDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_PARAM1, param1)
-                    putInt(ARG_PARAM2, param2)
-                    putInt(ARG_PARAM3, param3)
+                    putInt(ARG_POS, pos)
                 }
             }
     }
