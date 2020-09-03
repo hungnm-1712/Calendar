@@ -62,13 +62,13 @@ class CaculateDate {
         // mm la thang Am lich duoc tinh truoc do
         fun getChiThang(mm: Int): String? {
             val tam = (mm) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
-            return Chi.get(tam)
+            return Chi.get(tam-1)
         }
 
         // mm la thang am lich, yy nam am lich
         fun getCanThang(mm: Int, yy: Int): String? {
             val tam = (yy * 12 + mm + 2) % 10
-            return Can.get(tam)
+            return Can.get(tam-1)
         }
 
         fun jdToDate(jd: Long): ArrayList<Int> {

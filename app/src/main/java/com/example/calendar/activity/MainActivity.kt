@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         tabLayout.getTabAt(0)?.setIcon(R.drawable.calendar_day)
         tabLayout.getTabAt(1)?.setIcon(R.drawable.calendar_month)
+
         var viewPagerAdapter =
             ViewPagerMainAdapter(this, supportFragmentManager, tabLayout.tabCount)
         viewPager.adapter = viewPagerAdapter
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 viewPager!!.currentItem = tab.position
             }
+
 
         })
 

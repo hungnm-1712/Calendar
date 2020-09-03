@@ -11,7 +11,6 @@ import com.example.calendar.fragment.MonthFragment
 class ViewPagerDayDetailAdapter(
     private val mContext: Context,
     fm: FragmentManager,
-    internal var totalTabs: Int,
     var dd: Int, var mm: Int, var yyyy: Int
 ) :
     FragmentPagerAdapter(fm) {
@@ -21,7 +20,7 @@ class ViewPagerDayDetailAdapter(
     }
 
     override fun getCount(): Int {
-        return totalTabs
+        return  Integer.MAX_VALUE;
     }
 
 }

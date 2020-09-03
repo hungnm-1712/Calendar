@@ -112,7 +112,7 @@ class DayFragment : Fragment() {
 
     private fun viewPagerDayDetail() {
         var adapterDetailDayViewPager =
-            ViewPagerDayDetailAdapter(context!!, fragmentManager!!, 3, dd, mm, yyyy)
+            ViewPagerDayDetailAdapter(context!!, fragmentManager!!, dd, mm, yyyy)
         vpDayDetail.adapter = adapterDetailDayViewPager
 
         vpDayDetail.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -124,6 +124,7 @@ class DayFragment : Fragment() {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
+
             }
 
             override fun onPageSelected(position: Int) {
@@ -145,9 +146,9 @@ class DayFragment : Fragment() {
             "$thangAm/ ${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(2)}"
         tvNgayAm.text = "${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(0)}"
 
-        tvCanChiNam.text = "Năm ${CaculateDate.getCanNam(year)} ${CaculateDate.getChiNam(year)}"
+        tvCanChiNam.text = "${CaculateDate.getCanNam(year)} ${CaculateDate.getChiNam(year)}"
         tvCanChiThang.text =
-            "Tháng ${CaculateDate.getCanThang(month, year)} ${CaculateDate.getChiThang(month)}"
+            "${CaculateDate.getCanThang(month, year)} ${CaculateDate.getChiThang(month)}"
         tvCanChiNgay.text =
             "${CaculateDate.getCanNgay(day, month, year)} ${CaculateDate.getChiNgay(
                 day,
