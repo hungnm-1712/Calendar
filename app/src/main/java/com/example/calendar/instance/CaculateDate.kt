@@ -5,7 +5,7 @@ import android.util.Log
 class CaculateDate {
     companion object {
         val TAG = "TAG Caculate Date"
-        val Thu = arrayOf("Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật")
+        val Thu = arrayOf("Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", "Chủ nhật")
         val Chi =
             arrayOf(
                 "Tý",
