@@ -5,7 +5,8 @@ import android.util.Log
 class CaculateDate {
     companion object {
         val TAG = "TAG Caculate Date"
-        val Thu = arrayOf("Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", "Chủ nhật")
+        val Thu =
+            arrayOf("Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", "Chủ nhật")
         val Chi =
             arrayOf(
                 "Tý",
@@ -362,8 +363,22 @@ class CaculateDate {
 
         }
 
-        fun getChiGio(hh:Int){
-
+        fun getChiGio(hh: Int): String {
+            when (hh) {
+                23, 0 -> return Chi.get(0)
+                1, 2 -> return Chi.get(1)
+                3, 4 -> return Chi.get(2)
+                5, 6 -> return Chi.get(3)
+                7, 8 -> return Chi.get(4)
+                9, 10 -> return Chi.get(5)
+                11, 12 -> return Chi.get(6)
+                13, 14 -> return Chi.get(7)
+                15, 16 -> return Chi.get(8)
+                17, 18 -> return Chi.get(9)
+                19, 20 -> return Chi.get(10)
+                21, 22 -> return Chi.get(11)
+                else -> return ""
+            }
         }
 
 

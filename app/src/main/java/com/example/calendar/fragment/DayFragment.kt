@@ -138,10 +138,11 @@ class DayFragment : Fragment() {
         tvNamDuong.text = yyyy.toString()
 
         var thangAm = "${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(1)}"
-        if(CaculateDate.convertSolar2Lunar(day, month, year)!!.get(1)<10){
+        if (CaculateDate.convertSolar2Lunar(day, month, year)!!.get(1) < 10) {
             thangAm = "0${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(1)}"
         }
-        tvThangNamAm.text = "$thangAm/ ${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(2)}"
+        tvThangNamAm.text =
+            "$thangAm/ ${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(2)}"
         tvNgayAm.text = "${CaculateDate.convertSolar2Lunar(day, month, year)!!.get(0)}"
 
         tvCanChiNam.text = "Năm ${CaculateDate.getCanNam(year)} ${CaculateDate.getChiNam(year)}"
@@ -153,6 +154,9 @@ class DayFragment : Fragment() {
                 month,
                 year
             )}"
+
+//        tvGioHoangDao.text = SimpleDateFormat("HH:mm").format(calendar?.time)
+        tvChiGio.text = CaculateDate.getChiGio(calendar?.get(Calendar.HOUR)!!)
 
     }
 

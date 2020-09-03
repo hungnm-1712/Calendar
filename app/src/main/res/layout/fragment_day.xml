@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".fragment.DayFragment">
 
+    <View
+        android:id="@+id/view3"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="#DFDFDF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
@@ -59,7 +69,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
-        android:layout_height="220dp"
+        android:layout_height="210dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -213,6 +223,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/font_regular"
             android:text="mm/yy Âm"
+            android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tvNgayAm" />
@@ -234,11 +245,11 @@
             android:id="@+id/tvGioHoangDao"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="32dp"
+            android:layout_marginRight="8dp"
             android:gravity="center_horizontal"
             android:text="Giờ hoàng đạo"
-            android:layout_marginRight="8dp"
-            android:layout_marginLeft="8dp"
             android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"

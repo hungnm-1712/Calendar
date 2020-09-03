@@ -15,9 +15,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        tabLayout.addTab(tabLayout.newTab().setText("Lịch ngày"))
-        tabLayout.addTab(tabLayout.newTab().setText("Lịch tháng"))
+        tabLayout.addTab(tabLayout.newTab().setText("Ngày"))
+        tabLayout.addTab(tabLayout.newTab().setText("Tháng"))
 
+        tabLayout.getTabAt(0)?.setIcon(R.drawable.calendar_day)
+        tabLayout.getTabAt(1)?.setIcon(R.drawable.calendar_month)
         var viewPagerAdapter =
             ViewPagerMainAdapter(this, supportFragmentManager, tabLayout.tabCount)
         viewPager.adapter = viewPagerAdapter
