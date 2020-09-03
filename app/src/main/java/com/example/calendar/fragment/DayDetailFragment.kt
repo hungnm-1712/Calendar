@@ -1,39 +1,31 @@
 package com.example.calendar.fragment
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.fragment.app.Fragment
 import com.example.calendar.R
-import com.example.calendar.instance.CaculateDate
 import kotlinx.android.synthetic.main.fragment_day_detail.*
-import java.text.FieldPosition
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_POS = "pos"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DayDetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class DayDetailFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    val TAG = "TAG Day detail fragment"
-    private var pos: Int? = null
-//    private var dd: Int? = null
-//    private var mm: Int? = null
-//    private var yyyy: Int? = null
+    val TAG = DayDetailFragment::javaClass.name
+    private var position: Int? = null
+
+
+    companion object {
+        fun newInstance(pos: Int) =
+            DayDetailFragment().apply {
+                position = pos - Int.MAX_VALUE / 2
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            pos = it.getInt(ARG_POS)
-        }
     }
 
     override fun onCreateView(
@@ -45,9 +37,19 @@ class DayDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         try {
+            position?.let {
 
-            tvNgayDuong.text = (pos?.minus(Int.MAX_VALUE)).toString()
-//            tvThu.text = CaculateDate.getThu(dd!!, mm!!, yyyy!!)
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.DATE, it);
+                var dd = calendar?.get(Calendar.DAY_OF_MONTH)!!
+                var mm = calendar?.get(Calendar.MONTH)!! + 1
+                var yyyy = calendar?.get(Calendar.YEAR)!!
+                val dayOfWeek = calendar[Calendar.DAY_OF_WEEK]
+
+                tvNgayDuong.text = dd.toString()
+                tvThu.text = "Thu $dayOfWeek"
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -55,12 +57,5 @@ class DayDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    companion object {
-        fun newInstance(pos: Int) =
-            DayDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_POS, pos)
-                }
-            }
-    }
+
 }
