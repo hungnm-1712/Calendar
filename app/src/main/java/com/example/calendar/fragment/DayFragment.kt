@@ -69,6 +69,8 @@ class DayFragment : Fragment() {
         for (i in 1..31) {
             listDay.add(i)
         }
+
+
         return inflater.inflate(R.layout.fragment_day, container, false)
     }
 
