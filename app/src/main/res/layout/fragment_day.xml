@@ -42,7 +42,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="2020"
+            android:text="404"
             android:textColor="#ffffff" />
 
         <TextView
@@ -51,7 +51,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Tháng "
+            android:text="Tháng 404"
             android:textColor="#ffffff" />
     </LinearLayout>
 
@@ -95,7 +95,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/font_bold"
             android:gravity="center"
-            android:text="30"
+            android:text="404"
             android:textColor="#000000"
             android:textSize="64sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"

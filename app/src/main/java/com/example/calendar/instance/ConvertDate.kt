@@ -1,10 +1,10 @@
 package com.example.calendar.instance
 
-import android.util.Log
-
-class CaculateDate {
+class ConvertDate {
     companion object {
         val TAG = "TAG Caculate Date"
+
+
         val Thu =
             arrayOf("Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", "Chủ nhật")
         val Chi =
@@ -24,13 +24,16 @@ class CaculateDate {
             )
         val Can = arrayOf("Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý")
 
+
         /// Tìm tên gọi Thứ của ngày
         fun getThu(dd: Int, mm: Int, yy: Int): String {
-            val jd = jdFromDate(dd, mm, yy)
+            val jd = getJdFromDate(dd, mm, yy)
             var index = (jd % 7)
             return Thu.get(index)
         }
 
+
+        /** --- CAN CHI -----------------------------------------------*/
 
         /// Tìm tên gọi Chi của năm (12 chi)
         fun getChiNam(yy: Int): String {
@@ -46,14 +49,14 @@ class CaculateDate {
 
         /// Tìm tên gọi Can của ngày
         fun getCanNgay(dd: Int, mm: Int, yy: Int): String? {
-            val jd = jdFromDate(dd, mm, yy)
+            val jd = getJdFromDate(dd, mm, yy)
             return Can.get((jd + 9) % 10)
         }
 
 
         /// Tìm tên gọi Chi của ngày
         fun getChiNgay(dd: Int, mm: Int, yy: Int): String {
-            val jd = jdFromDate(dd, mm, yy)
+            val jd = getJdFromDate(dd, mm, yy)
             return Chi.get((jd + 1) % 12)
         }
 
@@ -61,24 +64,21 @@ class CaculateDate {
         /// Tìm tên gọi Chi của tháng (!tháng Âm Lịch)
         // mm la thang Am lich duoc tinh truoc do
         fun getChiThang(mm: Int): String? {
-            var tam = (mm) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
-
-            if (mm < 12) {
-                tam--
-            }
+            var tam = (mm + 1) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
             return Chi.get(tam)
         }
 
         // mm la thang am lich, yy nam am lich
         fun getCanThang(mm: Int, yy: Int): String? {
-            var tam = (yy * 12 + mm + 2) % 10
-            if (mm < 12) {
-                tam --
-            }
+            var tam = (yy * 12 + mm + 2 + 1) % 10
             return Can.get(tam)
         }
 
-        fun jdToDate(jd: Long): ArrayList<Int> {
+
+        /** --- Convert date -----------------------------------------------*/
+
+        // Đổi ngày julius sang ngày dương
+        fun convertJdToDate(jd: Long): ArrayList<Int> {
             val a: Long
             val b: Long
             val c: Long
@@ -108,7 +108,8 @@ class CaculateDate {
             return listDMY
         }
 
-        fun jdFromDate(dd: Int, mm: Int, yy: Int): Int {
+        // Lấy ngày julius từ ngày dương
+        fun getJdFromDate(dd: Int, mm: Int, yy: Int): Int {
             val a = (14 - mm) / 12
             val y = yy + 4800 - a
             val m = mm + 12 * a - 3
@@ -122,7 +123,8 @@ class CaculateDate {
             return jd
         }
 
-        // Tinh ngay Soc
+        // Tinh ngay Soc (k biet ngay gi :)) )
+
         fun getNewMoonDay(k: Int): Int {
             var timeZone = 7
             // T, T2, T3, dr, Jd1, M, Mpr, F, C1, deltat, JdNew;
@@ -188,7 +190,7 @@ class CaculateDate {
         //ERROR
         // Tim ngay bat dau thang 11 am lich
         fun getLunarMonth11(yy: Int): Int {
-            val off = jdFromDate(31, 12, yy) - 2415021 // truoc 31/12/yy
+            val off = getJdFromDate(31, 12, yy) - 2415021 // truoc 31/12/yy
             val k = (off / 29.530588853).toInt()
             var nm = getNewMoonDay(k).toDouble()// tim ngay soc truoc 31/12/yy
             val sunLong = getSunLongitude(nm) // sun longitude at local midnight
@@ -219,10 +221,10 @@ class CaculateDate {
         }
 
 
-        // Duong lich sang Am lich
+        /** Duong lich sang Am lich */
         fun convertSolar2Lunar(dd: Int, mm: Int, yy: Int): ArrayList<Int>? {
             var timeZone = 7
-            val dayNumber = jdFromDate(dd, mm, yy)
+            val dayNumber = getJdFromDate(dd, mm, yy)
             val k = ((dayNumber - 2415021.076998695) / 29.530588853).toInt()
             var monthStart = getNewMoonDay(k + 1)
             if (monthStart > dayNumber) {
@@ -257,7 +259,6 @@ class CaculateDate {
                 lunarYear -= 1
             }
             var list = arrayListOf<Int>((dayNumber - monthStart + 1), lunarMonth, lunarYear)
-            Log.d(TAG, "Duong sang am : $list")
             return list
         }
 
@@ -300,9 +301,11 @@ class CaculateDate {
             }
             k = (0.5 + (a11 - 2415021.076998695) / 29.530588853).toInt()
             monthStart = getNewMoonDay(k + off).toLong()
-            return jdToDate(monthStart + lunarDay - 1)
+            return convertJdToDate(monthStart + lunarDay - 1)
         }
 
+
+        // Có phải năm nhuận không
         fun isLeapYear(yy: Int): Boolean {
             if ((yy % 4 == 0 && yy % 100 != 0) || yy % 400 == 0) {
                 return true
