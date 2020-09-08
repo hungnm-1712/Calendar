@@ -1,5 +1,7 @@
 package com.example.calendar.instance;
 
+import android.util.Log;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -481,7 +483,7 @@ public class Lunar {
         // System.out.println(SAO[(int) longDay]);
         return (int) longDay;
     }
-
+     private static final String  TAG= "TAG_Lunar";
     // result=0: ngay hac dao
     // result=1: ngay hoang dao
     // result=-1: error
@@ -489,6 +491,8 @@ public class Lunar {
         int chi = chi(dmy)[0];
         DayMonthYear lunar = solar2Lunar(dmy);
 
+        Log.d(TAG,"lunar "+ lunar.getDay() +"/"+ lunar.getMonth() +"/"+  lunar.getYear() + "/" + lunar.getLeap());
+        Log.d("TAG_Lunar", "dmy ngay hoang dao" + dmy.getDay() +"/"+ dmy.getMonth() +"/"+  dmy.getYear());
         int[] hoangDao = new int[]{1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0};
         int i = -1, result;
 
@@ -527,7 +531,6 @@ public class Lunar {
                 i = -1;
                 break;
         }
-
         if (i != -1) {
             result = (chi - i + 12) % 12;
             return hoangDao[result];

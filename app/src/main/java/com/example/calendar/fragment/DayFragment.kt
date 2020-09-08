@@ -11,7 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.example.calendar.R
 import com.example.calendar.adapter.ViewPagerDayDetailAdapter
-import com.example.calendar.instance.ConvertDate
+import com.example.calendar.instance.CaculateDate
+import com.example.calendar.model.DayMonthYearModel
 import kotlinx.android.synthetic.main.dialog_chose_day.view.*
 import kotlinx.android.synthetic.main.fragment_day.*
 import kotlinx.android.synthetic.main.fragment_day_detail.*
@@ -23,10 +24,9 @@ class DayFragment : Fragment() {
     }
 
     val TAG = " TAG Day fragment"
-    var dd = 0
-    var mm = 0
-    var yyyy = 0
-    var calendar: Calendar? = null
+
+    lateinit var dmy: DayMonthYearModel
+    lateinit var calendar: Calendar
     var alertDialog: AlertDialog? = null
 
     var listDay = arrayListOf<Int>()
@@ -37,12 +37,13 @@ class DayFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         calendar = Calendar.getInstance()
-        dd = calendar?.get(Calendar.DAY_OF_MONTH)!!
-        mm = calendar?.get(Calendar.MONTH)!! + 1
-        yyyy = calendar?.get(Calendar.YEAR)!!
 
+        dmy = DayMonthYearModel(
+            calendar?.get(Calendar.DAY_OF_MONTH),
+            calendar?.get(Calendar.MONTH) + 1,
+            calendar?.get(Calendar.YEAR)
+        )
 
 
         for (i in 1900..2100) {
@@ -90,34 +91,48 @@ class DayFragment : Fragment() {
 
                 /** Selection on spinner*/
 
-                show.spnDay.setSelection(dd - 1)
-                show.spnMonth.setSelection(mm - 1)
-                val spinnerPosition: Int = adapterYear.getPosition(yyyy)
+                show.spnDay.setSelection(dmy.dd - 1)
+                show.spnMonth.setSelection(dmy.mm - 1)
+                val spinnerPosition: Int = adapterYear.getPosition(dmy.yyyy)
                 show.spnYear.setSelection(spinnerPosition)
 
                 /** ChoseDay */
 
                 show.btnChoseDay.setOnClickListener {
-                    dd = show.spnDay.selectedItem.toString().toInt()
-                    mm = show.spnMonth.selectedItemPosition + 1
-                    yyyy = show.spnYear.selectedItem.toString().toInt()
-                    var ddtoday = calendar?.get(Calendar.DAY_OF_MONTH)!!
-                    var mmtoday = calendar?.get(Calendar.MONTH)!! + 1
-                    var yyyytoday = calendar?.get(Calendar.YEAR)!!
-                    Log.d(TAG, "$dd $mm $yyyy")
+//                    dd = show.spnDay.selectedItem.toString().toInt()
+//                    mm = show.spnMonth.selectedItemPosition + 1
+//                    yyyy = show.spnYear.selectedItem.toString().toInt()
+                    dmy = DayMonthYearModel(
+                        show.spnDay.selectedItem.toString().toInt(),
+                        show.spnMonth.selectedItemPosition + 1,
+                        show.spnYear.selectedItem.toString().toInt()
+                    )
+
+                    Log.d(TAG, "$dmy")
                     setTextToLayout()
 //                    viewPagerDayDetail()
+
+                    // Đếm khoảng cách giữa ngày chọn và ngày hiện tại
                     var dem =
-                        ConvertDate.getJdFromDate(ddtoday, mmtoday, yyyytoday) -
-                                ConvertDate.getJdFromDate(dd, mm, yyyy)
-                    vpDayDetail.setCurrentItem(Int.MAX_VALUE/2 -dem)
+                        CaculateDate.getJdFromDate(
+                            DayMonthYearModel(
+                                calendar?.get(Calendar.DAY_OF_MONTH),
+                                calendar?.get(Calendar.MONTH) + 1,
+                                calendar?.get(Calendar.YEAR)
+                            )
+                        ) -
+                                CaculateDate.getJdFromDate(dmy)
+                    vpDayDetail.setCurrentItem(Int.MAX_VALUE / 2 - dem)
                     alertDialog?.dismiss()
                 }
 
                 show.btnToday.setOnClickListener {
-                    dd = calendar?.get(Calendar.DAY_OF_MONTH)!!
-                    mm = calendar?.get(Calendar.MONTH)!! + 1
-                    yyyy = calendar?.get(Calendar.YEAR)!!
+
+                    dmy = DayMonthYearModel(
+                        calendar?.get(Calendar.DAY_OF_MONTH),
+                        calendar?.get(Calendar.MONTH) + 1,
+                        calendar?.get(Calendar.YEAR)
+                    )
                     setTextToLayout()
                     vpDayDetail.currentItem = Int.MAX_VALUE / 2
                     alertDialog?.dismiss()
@@ -160,17 +175,24 @@ class DayFragment : Fragment() {
                     pos?.let {
                         val calendar1 = Calendar.getInstance()
                         calendar1.add(Calendar.DATE, it);
-                        dd = calendar1.get(Calendar.DAY_OF_MONTH)!!
-                        mm = calendar1.get(Calendar.MONTH)!! + 1
-                        yyyy = calendar1.get(Calendar.YEAR)!!
+//                        dd = calendar1.get(Calendar.DAY_OF_MONTH)
+//                        mm = calendar1.get(Calendar.MONTH) + 1
+//                        yyyy = calendar1.get(Calendar.YEAR)
                         val dayOfWeek = calendar1[Calendar.DAY_OF_WEEK]
+                        dmy = DayMonthYearModel(
+                            calendar1.get(Calendar.DAY_OF_MONTH),
+                            calendar1.get(Calendar.MONTH) + 1,
+                            calendar1.get(Calendar.YEAR)
+                        )
+
                         Log.d(
                             TAG,
-                            "ngay $dd thang $mm nam $yyyy + ${ConvertDate.getThu(dd, mm, yyyy)}"
+                            "$dmy + ${CaculateDate.getThu(dmy)}"
                         )
-                        tvNgayDuong.text = dd.toString()
-                        tvThu.text = "${ConvertDate.getThu(dd, mm, yyyy)}"
+                        tvNgayDuong.text = dmy.dd.toString()
                         setTextToLayout()
+
+
                     }
 
                 } catch (e: Exception) {
@@ -183,42 +205,49 @@ class DayFragment : Fragment() {
 
 
     fun setTextToLayout() {
-
-
-        if (dd == calendar?.get(Calendar.DAY_OF_MONTH)!!) {
+        if (dmy == DayMonthYearModel(
+                calendar?.get(Calendar.DAY_OF_MONTH),
+                calendar?.get(Calendar.MONTH) + 1,
+                calendar?.get(Calendar.YEAR)
+            )
+        ) {
             tvChoseDay.text = "Hôm nay"
         } else {
-            tvChoseDay.text = "Ngày $dd"
+            tvChoseDay.text = "Ngày ${dmy.dd}"
         }
 
-
-        tvThangDuong.text = "Tháng $mm"
-        tvNamDuong.text = yyyy.toString()
-
-        var ngayAm = ConvertDate.convertSolar2Lunar(dd, mm, yyyy)!!.get(0)
-        var thangAm = ConvertDate.convertSolar2Lunar(dd, mm, yyyy)!!.get(1)
-        var namAm = ConvertDate.convertSolar2Lunar(dd, mm, yyyy)!!.get(2)
-
-        if (thangAm < 10) {
+        tvThangDuong.text = "Tháng ${dmy.mm}"
+        tvNamDuong.text = dmy.yyyy.toString()
+        var dmyam = CaculateDate.convertSolar2Lunar(dmy)
+        if (dmyam.mm < 10) {
             tvThangNamAm.text =
-                "0$thangAm/ $namAm"
+                "0${dmyam.mm}/ ${dmyam.yyyy}"
         } else {
             tvThangNamAm.text =
-                "$thangAm/ $namAm"
+                "${dmyam.mm}/ ${dmyam.yyyy}"
         }
 
-        tvNgayAm.text = "${ConvertDate.convertSolar2Lunar(dd, mm, yyyy)!!.get(0)}"
+        tvNgayAm.text = "${dmyam.dd}"
 
-        tvCanChiNam.text = "${ConvertDate.getCanNam(yyyy)} ${ConvertDate.getChiNam(yyyy)}"
+        tvCanChiNam.text = "${CaculateDate.getCanNam(dmy)} ${CaculateDate.getChiNam(dmy)}"
 
         tvCanChiThang.text =
-            "${ConvertDate.getCanThang(thangAm, namAm)} ${ConvertDate.getChiThang(thangAm)}"
+            "${CaculateDate.getCanThang(dmyam)} ${CaculateDate.getChiThang(dmyam)}"
 
         tvCanChiNgay.text =
-            "${ConvertDate.getCanNgay(dd, mm, yyyy)} ${ConvertDate.getChiNgay(dd, mm, yyyy)}"
+            "${CaculateDate.getCanNgay(dmy)} ${CaculateDate.getChiNgay(dmy)}"
 
-//        tvGioHoangDao.text = SimpleDateFormat("HH:mm").format(calendar?.time)
-        tvChiGio.text = ConvertDate.getChiGio(calendar?.get(Calendar.HOUR_OF_DAY)!!)
+        var textGioHoangDao =StringBuilder()
+        for(i in 0 .. CaculateDate.getGioHoangDao(dmy)!!.size-1){
+            textGioHoangDao.append(CaculateDate.getGioHoangDao(dmy)!!.get(i))
+            if(i!=CaculateDate.getGioHoangDao(dmy)!!.size-1){
+                textGioHoangDao.append(", ")
+            }
+        }
+
+        tvGioHoangDao.text = textGioHoangDao
+
+        tvChiGio.text = CaculateDate.getChiGio(calendar?.get(Calendar.HOUR_OF_DAY))
         Log.d(TAG, "Hour: ${calendar?.get(Calendar.HOUR_OF_DAY)}")
 
     }

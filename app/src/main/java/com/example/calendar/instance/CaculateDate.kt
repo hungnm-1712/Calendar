@@ -1,18 +1,21 @@
 package com.example.calendar.instance
 
-class ConvertDate {
+import android.util.Log
+import com.example.calendar.model.DayMonthYearModel
+
+class CaculateDate {
     companion object {
         val TAG = "TAG Caculate Date"
 
 
-        val Thu =
+        val arrayThu =
             arrayOf("Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy", "Chủ nhật")
-        val Chi =
+        val arrayChi =
             arrayOf(
                 "Tý",
                 "Sửu",
                 "Dần",
-                "Mẹo",
+                "Mão",
                 "Thìn",
                 "Tỵ",
                 "Ngọ",
@@ -22,63 +25,64 @@ class ConvertDate {
                 "Tuất",
                 "Hợi"
             )
-        val Can = arrayOf("Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý")
+        val arrayCan =
+            arrayOf("Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý")
 
 
         /// Tìm tên gọi Thứ của ngày
-        fun getThu(dd: Int, mm: Int, yy: Int): String {
-            val jd = getJdFromDate(dd, mm, yy)
+        fun getThu(dmy: DayMonthYearModel): String {
+            val jd = getJdFromDate(dmy)
             var index = (jd % 7)
-            return Thu.get(index)
+            return arrayThu.get(index)
         }
 
 
         /** --- CAN CHI -----------------------------------------------*/
 
         /// Tìm tên gọi Chi của năm (12 chi)
-        fun getChiNam(yy: Int): String {
-            return Chi.get((yy + 8) % 12)
+        fun getChiNam(dmy: DayMonthYearModel): String {
+            return arrayChi.get((dmy.yyyy + 8) % 12)
         }
 
 
         /// Tìm tên gọi Can của năm (10 can)
-        fun getCanNam(yy: Int): String? {
-            return Can.get((yy + 6) % 10)
+        fun getCanNam(dmy: DayMonthYearModel): String? {
+            return arrayCan.get((dmy.yyyy + 6) % 10)
         }
 
 
         /// Tìm tên gọi Can của ngày
-        fun getCanNgay(dd: Int, mm: Int, yy: Int): String? {
-            val jd = getJdFromDate(dd, mm, yy)
-            return Can.get((jd + 9) % 10)
+        fun getCanNgay(dmy: DayMonthYearModel): String? {
+            val jd = getJdFromDate(dmy)
+            return arrayCan.get((jd + 9) % 10)
         }
 
 
         /// Tìm tên gọi Chi của ngày
-        fun getChiNgay(dd: Int, mm: Int, yy: Int): String {
-            val jd = getJdFromDate(dd, mm, yy)
-            return Chi.get((jd + 1) % 12)
+        fun getChiNgay(dmy: DayMonthYearModel): String {
+            val jd = getJdFromDate(dmy)
+            return arrayChi.get((jd + 1) % 12)
         }
 
 
         /// Tìm tên gọi Chi của tháng (!tháng Âm Lịch)
         // mm la thang Am lich duoc tinh truoc do
-        fun getChiThang(mm: Int): String? {
-            var tam = (mm + 1) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
-            return Chi.get(tam)
+        fun getChiThang(dmy: DayMonthYearModel): String? {
+            var tam = (dmy.mm + 1) % 12 // Thang 11 la thang Ty, thang 12 la thang Suu
+            return arrayChi.get(tam)
         }
 
         // mm la thang am lich, yy nam am lich
-        fun getCanThang(mm: Int, yy: Int): String? {
-            var tam = (yy * 12 + mm + 2 + 1) % 10
-            return Can.get(tam)
+        fun getCanThang(dmy: DayMonthYearModel): String? {
+            var tam = (dmy.yyyy * 12 + dmy.mm + 2 + 1) % 10
+            return arrayCan.get(tam)
         }
 
 
         /** --- Convert date -----------------------------------------------*/
 
         // Đổi ngày julius sang ngày dương
-        fun convertJdToDate(jd: Long): ArrayList<Int> {
+        fun convertJdToDate(jd: Long): DayMonthYearModel {
             val a: Long
             val b: Long
             val c: Long
@@ -104,21 +108,21 @@ class ConvertDate {
             day = (e - ((153 * m + 2) / 5.0f).toInt() + 1).toInt()
             month = (m + 3 - 12 * (m / 10.0f).toInt()).toInt()
             year = (b * 100 + d - 4800 + (m / 10.0f).toInt()).toInt()
-            var listDMY = arrayListOf<Int>(day, month, year)
-            return listDMY
+//            var listDMY = arrayListOf<Int>(day, month, year)
+            return DayMonthYearModel(day, month, year)
         }
 
         // Lấy ngày julius từ ngày dương
-        fun getJdFromDate(dd: Int, mm: Int, yy: Int): Int {
-            val a = (14 - mm) / 12
-            val y = yy + 4800 - a
-            val m = mm + 12 * a - 3
-            var jd = (dd
+        fun getJdFromDate(dmy: DayMonthYearModel): Int {
+            val a = (14 - dmy.mm) / 12
+            val y = dmy.yyyy + 4800 - a
+            val m = dmy.mm + 12 * a - 3
+            var jd = (dmy.dd
                     + ((153 * m + 2) / 5)
                     + (365 * y)
                     + (y / 4)) - (y / 100) + (y / 400) - 32045
             if (jd < 2299161) {
-                jd = dd + ((153 * m + 2) / 5) + 365 * y + (y / 4) - 32083
+                jd = dmy.dd + ((153 * m + 2) / 5) + 365 * y + (y / 4) - 32083
             }
             return jd
         }
@@ -190,7 +194,7 @@ class ConvertDate {
         //ERROR
         // Tim ngay bat dau thang 11 am lich
         fun getLunarMonth11(yy: Int): Int {
-            val off = getJdFromDate(31, 12, yy) - 2415021 // truoc 31/12/yy
+            val off = getJdFromDate(DayMonthYearModel(31, 12, yy)) - 2415021 // truoc 31/12/yy
             val k = (off / 29.530588853).toInt()
             var nm = getNewMoonDay(k).toDouble()// tim ngay soc truoc 31/12/yy
             val sunLong = getSunLongitude(nm) // sun longitude at local midnight
@@ -222,23 +226,23 @@ class ConvertDate {
 
 
         /** Duong lich sang Am lich */
-        fun convertSolar2Lunar(dd: Int, mm: Int, yy: Int): ArrayList<Int>? {
+        fun convertSolar2Lunar(dmy: DayMonthYearModel): DayMonthYearModel {
             var timeZone = 7
-            val dayNumber = getJdFromDate(dd, mm, yy)
+            val dayNumber = getJdFromDate(dmy)
             val k = ((dayNumber - 2415021.076998695) / 29.530588853).toInt()
             var monthStart = getNewMoonDay(k + 1)
             if (monthStart > dayNumber) {
                 monthStart = getNewMoonDay(k)
             }
-            var a11 = getLunarMonth11(yy)
+            var a11 = getLunarMonth11(dmy.yyyy)
             var b11 = a11
             var lunarYear: Int
             if (a11 >= monthStart) {
-                lunarYear = yy
-                a11 = getLunarMonth11(yy - 1)
+                lunarYear = dmy.yyyy
+                a11 = getLunarMonth11(dmy.yyyy - 1)
             } else {
-                lunarYear = yy + 1
-                b11 = getLunarMonth11(yy + 1)
+                lunarYear = dmy.yyyy + 1
+                b11 = getLunarMonth11(dmy.yyyy + 1)
             }
             val diff = ((monthStart - a11) / 29)
             var lunarLeap = 0
@@ -258,8 +262,7 @@ class ConvertDate {
             if (lunarMonth >= 11 && diff < 4) {
                 lunarYear -= 1
             }
-            var list = arrayListOf<Int>((dayNumber - monthStart + 1), lunarMonth, lunarYear)
-            return list
+            return DayMonthYearModel((dayNumber - monthStart + 1), lunarMonth, lunarYear)
         }
 
         // Am lich sang Duong lich
@@ -268,7 +271,7 @@ class ConvertDate {
             lunarMonth: Int,
             lunarYear: Int,
             lunarLeap: Int
-        ): ArrayList<Int> {
+        ): DayMonthYearModel {
             val k: Int
             var off: Int
             val leapOff: Int
@@ -294,7 +297,7 @@ class ConvertDate {
                     leapMonth += 12
                 }
                 if (lunarLeap != 0 && lunarMonth.toLong() != leapMonth) {
-                    return arrayListOf<Int>(0, 0, 0)
+                    return DayMonthYearModel(0, 0, 0)
                 } else if (lunarLeap != 0 || off >= leapOff) {
                     off += 1
                 }
@@ -342,53 +345,113 @@ class ConvertDate {
             return -1
         }
 
-        fun getNextDay(dd: Int, mm: Int, yy: Int): ArrayList<Int> {
-            var dayOfMonth = getDayOfMonth(mm, yy)
-            if (dayOfMonth == -1 || dd < 1 || dd > dayOfMonth) {
+        fun getNextDay(dmy: DayMonthYearModel): ArrayList<Int> {
+            var dayOfMonth = getDayOfMonth(dmy.mm, dmy.yyyy)
+            if (dayOfMonth == -1 || dmy.dd < 1 || dmy.dd > dayOfMonth) {
                 return arrayListOf(-1, -1, -1)
             } else {
-                if (dd < dayOfMonth) return arrayListOf(dd + 1, mm, yy)
-                else if (mm == 12) {
-                    return arrayListOf(1, 1, yy + 1)
+                if (dmy.dd < dayOfMonth) return arrayListOf(dmy.dd + 1, dmy.mm, dmy.yyyy)
+                else if (dmy.mm == 12) {
+                    return arrayListOf(1, 1, dmy.yyyy + 1)
                 } else {
-                    return arrayListOf(1, mm + 1, yy)
+                    return arrayListOf(1, dmy.mm + 1, dmy.yyyy)
                 }
             }
 
         }
 
-        fun getDayBefore(dd: Int, mm: Int, yy: Int): ArrayList<Int> {
-            if (dd - 1 == 0) {
-                if (mm - 1 == 0) {
-                    return arrayListOf(31, 12, yy - 1)
+        fun getDayBefore(dmy: DayMonthYearModel): ArrayList<Int> {
+            if (dmy.dd - 1 == 0) {
+                if (dmy.mm - 1 == 0) {
+                    return arrayListOf(31, 12, dmy.yyyy - 1)
                 } else {
-                    return arrayListOf(getDayOfMonth(mm - 1, yy), mm - 1, yy)
+                    return arrayListOf(getDayOfMonth(dmy.mm - 1, dmy.yyyy), dmy.mm - 1, dmy.yyyy)
                 }
             } else {
-                return arrayListOf(dd - 1, mm, yy)
+                return arrayListOf(dmy.dd - 1, dmy.mm, dmy.yyyy)
             }
 
         }
 
         fun getChiGio(hh: Int): String {
             when (hh) {
-                23, 0 -> return Chi.get(0)
-                1, 2 -> return Chi.get(1)
-                3, 4 -> return Chi.get(2)
-                5, 6 -> return Chi.get(3)
-                7, 8 -> return Chi.get(4)
-                9, 10 -> return Chi.get(5)
-                11, 12 -> return Chi.get(6)
-                13, 14 -> return Chi.get(7)
-                15, 16 -> return Chi.get(8)
-                17, 18 -> return Chi.get(9)
-                19, 20 -> return Chi.get(10)
-                21, 22 -> return Chi.get(11)
+                23, 0 -> return arrayChi.get(0)
+                1, 2 -> return arrayChi.get(1)
+                3, 4 -> return arrayChi.get(2)
+                5, 6 -> return arrayChi.get(3)
+                7, 8 -> return arrayChi.get(4)
+                9, 10 -> return arrayChi.get(5)
+                11, 12 -> return arrayChi.get(6)
+                13, 14 -> return arrayChi.get(7)
+                15, 16 -> return arrayChi.get(8)
+                17, 18 -> return arrayChi.get(9)
+                19, 20 -> return arrayChi.get(10)
+                21, 22 -> return arrayChi.get(11)
                 else -> return ""
             }
         }
 
+        fun getGioHoangDao(dmy: DayMonthYearModel): ArrayList<String>? {
+            val chi = Lunar.chi(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy))[0]
+            val gio: IntArray?
+            gio = when (chi) {
+                0, 6 -> intArrayOf(0, 1, 3, 6, 8, 9)
+                1, 7 -> intArrayOf(2, 3, 5, 8, 10, 11)
+                2, 8 -> intArrayOf(0, 1, 4, 5, 7, 10)
+                3, 9 -> intArrayOf(0, 2, 3, 6, 7, 9)
+                4, 10 -> intArrayOf(2, 4, 5, 8, 9, 11)
+                5, 11 -> intArrayOf(1, 4, 6, 7, 10, 11)
+                else -> null
+            }
+            var arrayGioHoangDao = arrayListOf<String>()
+            for (i in 0..gio!!.size - 1) {
+                arrayGioHoangDao.add(arrayChi.get(gio.get(i)))
+            }
+            return arrayGioHoangDao
+        }
 
+        fun getGioHoangDaoChiGio(dmy: DayMonthYearModel): ArrayList<String>? {
+            val chi = Lunar.chi(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy))[0]
+            val gio: IntArray?
+            gio = when (chi) {
+                0, 6 -> intArrayOf(0, 1, 3, 6, 8, 9)
+                1, 7 -> intArrayOf(2, 3, 5, 8, 10, 11)
+                2, 8 -> intArrayOf(0, 1, 4, 5, 7, 10)
+                3, 9 -> intArrayOf(0, 2, 3, 6, 7, 9)
+                4, 10 -> intArrayOf(2, 4, 5, 8, 9, 11)
+                5, 11 -> intArrayOf(1, 4, 6, 7, 10, 11)
+                else -> null
+            }
+            var arrayGioHoangDao = arrayListOf<String>()
+            for (i in 0..gio!!.size - 1) {
+                arrayGioHoangDao.add("${arrayChi.get(gio.get(i))} (${Lunar.GIO.get(gio.get(i))}) ")
+            }
+            return arrayGioHoangDao
+        }
+
+        // Ngay hoang dao
+        fun ngayHoangDao(dmy: DayMonthYear): Int {
+            val chi = Lunar.chi(dmy)[0]
+            val lunar = convertSolar2Lunar(DayMonthYearModel(dmy.day, dmy.month, dmy.year))
+            Log.d(TAG, "lunar " + lunar.dd + "/" + lunar.mm + "/" + lunar.yyyy)
+            Log.d("TAG_Lunar", "dmy ngay hoang dao" + dmy.day + "/" + dmy.month + "/" + dmy.year)
+            val hoangDao = intArrayOf(1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0)
+            var i = -1
+            val result: Int
+            i = when (lunar.mm) {
+                1, 7 -> 0
+                2, 8 -> 2
+                3, 9 -> 4
+                4, 10 -> 6
+                5, 11 -> 8
+                6, 12 -> 10
+                else -> -1
+            }
+            return if (i != -1) {
+                result = (chi - i + 12) % 12
+                hoangDao[result]
+            } else -1
+        }
     }
 
 
