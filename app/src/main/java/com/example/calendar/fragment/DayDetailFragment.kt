@@ -43,15 +43,13 @@ class DayDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         try {
             position?.let {
-                Log.d(TAG,"Position $position")
+
                 val calendar = Calendar.getInstance()
                 calendar.add(Calendar.DATE, it);
 
-               dmy = DayMonthYearModel(calendar?.get(Calendar.DAY_OF_MONTH)!!,calendar?.get(Calendar.MONTH)!! + 1,calendar?.get(Calendar.YEAR)!!)
+                dmy = DayMonthYearModel(calendar?.get(Calendar.DAY_OF_MONTH)!!,calendar?.get(Calendar.MONTH)!! + 1,calendar?.get(Calendar.YEAR)!!)
                 val dayOfWeek = calendar[Calendar.DAY_OF_WEEK]
 
-
-                Log.d(TAG,"$dmy+ ${CaculateDate.getThu(dmy)}")
                 tvNgayDuong.text = dmy.dd.toString()
                 tvThu.text = "${CaculateDate.getThu(dmy)}"
 

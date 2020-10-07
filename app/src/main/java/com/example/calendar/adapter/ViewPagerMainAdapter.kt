@@ -12,7 +12,10 @@ class ViewPagerMainAdapter(val mContext: Context, fm: FragmentManager, var total
 
     override fun getItem(position: Int): Fragment {
         when (position) {
-            0 -> return DayFragment()
+            0 -> {
+                var dayFragment = DayFragment()
+                return dayFragment
+            }
             1 -> return MonthFragment()
         }
         return DayFragment()

@@ -1,6 +1,7 @@
 package com.example.calendar.instance
 
 import android.util.Log
+import com.example.calendar.model.DayMonthYear
 import com.example.calendar.model.DayMonthYearModel
 
 class CaculateDate {
@@ -392,7 +393,13 @@ class CaculateDate {
         }
 
         fun getGioHoangDao(dmy: DayMonthYearModel): ArrayList<String>? {
-            val chi = Lunar.chi(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy))[0]
+            val chi = Lunar.chi(
+                DayMonthYear(
+                    dmy.dd,
+                    dmy.mm,
+                    dmy.yyyy
+                )
+            )[0]
             val gio: IntArray?
             gio = when (chi) {
                 0, 6 -> intArrayOf(0, 1, 3, 6, 8, 9)
@@ -411,7 +418,13 @@ class CaculateDate {
         }
 
         fun getGioHoangDaoChiGio(dmy: DayMonthYearModel): ArrayList<String>? {
-            val chi = Lunar.chi(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy))[0]
+            val chi = Lunar.chi(
+                DayMonthYear(
+                    dmy.dd,
+                    dmy.mm,
+                    dmy.yyyy
+                )
+            )[0]
             val gio: IntArray?
             gio = when (chi) {
                 0, 6 -> intArrayOf(0, 1, 3, 6, 8, 9)
@@ -433,8 +446,6 @@ class CaculateDate {
         fun ngayHoangDao(dmy: DayMonthYear): Int {
             val chi = Lunar.chi(dmy)[0]
             val lunar = convertSolar2Lunar(DayMonthYearModel(dmy.day, dmy.month, dmy.year))
-            Log.d(TAG, "lunar " + lunar.dd + "/" + lunar.mm + "/" + lunar.yyyy)
-            Log.d("TAG_Lunar", "dmy ngay hoang dao" + dmy.day + "/" + dmy.month + "/" + dmy.year)
             val hoangDao = intArrayOf(1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0)
             var i = -1
             val result: Int

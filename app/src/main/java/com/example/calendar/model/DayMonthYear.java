@@ -1,4 +1,4 @@
-package com.example.calendar.instance;
+package com.example.calendar.model;
 
 public class DayMonthYear {
 	private int day, month, year, nm, leap;

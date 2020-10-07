@@ -5,8 +5,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.example.calendar.fragment.DayDetailFragment
-import com.example.calendar.fragment.DayFragment
-import com.example.calendar.fragment.MonthFragment
 
 class ViewPagerDayDetailAdapter(
     private val mContext: Context,

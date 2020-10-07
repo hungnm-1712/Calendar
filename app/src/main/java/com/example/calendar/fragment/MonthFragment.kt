@@ -1,101 +1,193 @@
 package com.example.calendar.fragment
 
+import android.app.DatePickerDialog
 import android.graphics.Color
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import androidx.fragment.app.Fragment
+import com.example.calendar.Interface.MonthCalendarInterface
 import com.example.calendar.R
+import com.example.calendar.adapter.CalendarAdapter
 import com.example.calendar.instance.CaculateDate
-import com.example.calendar.instance.DayMonthYear
-import com.example.calendar.instance.Lunar
+import com.example.calendar.instance.DayMonthYearSelected.dayMonthYearSelected
+import com.example.calendar.model.DayMonthYear
 import com.example.calendar.model.DayMonthYearModel
-import kotlinx.android.synthetic.main.fragment_day.*
 import kotlinx.android.synthetic.main.fragment_month.*
-import kotlinx.android.synthetic.main.fragment_month.tvCanChiNam
-import kotlinx.android.synthetic.main.fragment_month.tvCanChiNgay
-import kotlinx.android.synthetic.main.fragment_month.tvCanChiThang
-import kotlinx.android.synthetic.main.fragment_month.tvThu
 import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_DAY = "day"
-private const val ARG_MONTH = "month"
-private const val ARG_YEAR = "year"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MonthFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MonthFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-
-
+class MonthFragment : Fragment(), MonthCalendarInterface {
     val TAG = "TagMonthFragment"
-
     lateinit var calendar: Calendar
     lateinit var dmy: DayMonthYearModel
-
+    var DAYS_COUNT = 35
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         calendar = Calendar.getInstance()
         dmy = DayMonthYearModel(
-            calendar.get(Calendar.DAY_OF_MONTH),
-            calendar.get(Calendar.MONTH) + 1,
-            calendar.get(Calendar.YEAR)
+            this.calendar.get(Calendar.DAY_OF_MONTH),
+            this.calendar.get(Calendar.MONTH) + 1,
+            this.calendar.get(Calendar.YEAR)
         )
-
         return inflater.inflate(R.layout.fragment_month, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        setTextToLayout()
-        calendarView.setOnDateChangeListener { view, year, month, dayofmonth ->
-            dmy = DayMonthYearModel(dayofmonth, month + 1, year)
-            setTextToLayout()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setDateToView(dmy)
+        setCalendarToView(calendar)
+        openDatePickerDialog()
+        choseToday()
+
+    }
+
+    fun choseToday() {
+        btnToday.setOnClickListener {
+            var cal = Calendar.getInstance()
+            dmy = DayMonthYearModel(
+                this.calendar.get(Calendar.DAY_OF_MONTH),
+                this.calendar.get(Calendar.MONTH) + 1,
+                this.calendar.get(Calendar.YEAR)
+            )
+            setCalendarToView(cal)
+            setDateToView(dmy)
+            dayMonthYearSelected = dmy
         }
     }
 
-    fun setTextToLayout() {
-        tvThu.text = "${CaculateDate.getThu(dmy)}"
-        tvNgayThangNamDuong.text = formatDate(dmy)
+    fun openDatePickerDialog() {
+        cardviewChoseDay.setOnClickListener {
 
+            var cal = Calendar.getInstance()
 
-        var dmyAm = CaculateDate.convertSolar2Lunar(dmy)
-        tvNgayThangNamAm.text = formatDate(dmyAm)
+            var datePickerDialog = DatePickerDialog(
+                context!!,
+                android.R.style.Theme_Material_Light_Dialog_MinWidth,
+                { view, yyyy, mm, dd ->
+                    dmy = DayMonthYearModel(dd, mm + 1, yyyy)
+                    setDateToView(dmy)
+
+                    var date = Date(yyyy - 1900, mm, dd)
+                    cal.time = date
+                    setCalendarToView(cal)
+                    dayMonthYearSelected = dmy
+                },
+                dmy.yyyy,
+                dmy.mm - 1,
+                dmy.dd
+            )
+            datePickerDialog.show()
+
+        }
+
+    }
+
+    /**    Hiển thị lịch tháng     */
+    override fun setCalendarToView(cal: Calendar) {
+        var cells = ArrayList<Date>()
+
+        /* Ngày đầu tiên của tháng hiện tại*/
+        var calendar = cal.clone() as Calendar
+
+        /* Xắc định ô đầu tháng hiện tại*/
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        var monthBeginningCell = calendar.get(Calendar.DAY_OF_WEEK) - 2
+
+        Log.d(
+            TAG,
+            "vi tri dau tien cua ngay dau thang $monthBeginningCell  calendar.get(Calendar.DAY_OF_WEEK) ${
+                calendar.get(
+                    Calendar.DAY_OF_WEEK
+                )
+            } "
+        )
+        if (monthBeginningCell == -1) {
+            monthBeginningCell = 6
+        }
+        // Lấy ngày đầu tuần trong tuần chứa ngày đầu tháng
+        calendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell)
+
+        // Điền vào các ô
+        while (cells.size < DAYS_COUNT) {
+            cells.add(calendar.time)
+
+            // day in question
+            /*Thêm dòng cho những tháng đặc biệt*/
+            if (cells.size == 35) {
+                val lich = Calendar.getInstance()
+                lich.time = cells.get(34)
+                if (lich.get(Calendar.DATE) >= 28) {
+                    DAYS_COUNT = 42
+                } else {
+                    DAYS_COUNT = 35
+                }
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+
+        }
+        // Update gridview
+        gv_calendar?.adapter = CalendarAdapter(context, cells, this)
+    }
+
+    override fun setDateToView(dayMonthYear: DayMonthYearModel) {
+        tv_day_of_week.text = "${CaculateDate.getThu(dayMonthYear)}"
+        tv_solar_day.text = formatDateSolar(dayMonthYear)
+
+        var dmyAm = CaculateDate.convertSolar2Lunar(dayMonthYear)
+        tvNgayThangNamAm.text = formatDateSolar(dmyAm)
+        tv_lunar_day.text = formatDateLunar(dmyAm)
 
         tvCanChiNgay.text =
-            "Ngày ${CaculateDate.getCanNgay(dmy)} ${CaculateDate.getChiNgay(dmy)}"
+            "Ngày ${CaculateDate.getCanNgay(dayMonthYear)} ${CaculateDate.getChiNgay(dayMonthYear)}"
         tvCanChiThang.text =
             " - Tháng ${CaculateDate.getCanThang(dmyAm)} ${CaculateDate.getChiThang(dmyAm)}"
-        tvCanChiNam.text = " - Năm ${CaculateDate.getCanNam(dmy)} ${CaculateDate.getChiNam(dmy)}"
+        tvCanChiNam.text = " - Năm ${CaculateDate.getCanNam(dayMonthYear)} ${
+            CaculateDate.getChiNam(
+                dayMonthYear
+            )
+        }"
 
-        if (CaculateDate.ngayHoangDao(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy)) == 1) {
+        if (CaculateDate.ngayHoangDao(
+                DayMonthYear(
+                    dayMonthYear.dd,
+                    dayMonthYear.mm,
+                    dayMonthYear.yyyy
+                )
+            ) == 1
+        ) {
             tvNgayHoangDao.text = " *Ngày hoàng đạo*"
             tvNgayHoangDao.setTextColor(Color.RED)
             tvNgayHoangDao.visibility = View.VISIBLE
-        } else if (CaculateDate.ngayHoangDao(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy)) == 0) {
+        } else if (CaculateDate.ngayHoangDao(
+                DayMonthYear(
+                    dayMonthYear.dd,
+                    dayMonthYear.mm,
+                    dayMonthYear.yyyy
+                )
+            ) == 0
+        ) {
             tvNgayHoangDao.text = " *Ngày hắc đạo* "
             tvNgayHoangDao.setTextColor(Color.BLACK)
             tvNgayHoangDao.visibility = View.VISIBLE
-        } else if (CaculateDate.ngayHoangDao(DayMonthYear(dmy.dd, dmy.mm, dmy.yyyy)) == -1) {
+        } else if (CaculateDate.ngayHoangDao(
+                DayMonthYear(
+                    dayMonthYear.dd,
+                    dayMonthYear.mm,
+                    dayMonthYear.yyyy
+                )
+            ) == -1
+        ) {
             tvNgayHoangDao.visibility = View.INVISIBLE
         }
 
         var textGioHoangDao = StringBuilder()
-        for (i in 0..CaculateDate.getGioHoangDaoChiGio(dmy)!!.size - 1) {
-            textGioHoangDao.append(CaculateDate.getGioHoangDaoChiGio(dmy)!!.get(i))
+        for (i in 0..CaculateDate.getGioHoangDaoChiGio(dayMonthYear)!!.size - 1) {
+            textGioHoangDao.append(CaculateDate.getGioHoangDaoChiGio(dayMonthYear)!!.get(i))
             if (i == 2) {
                 textGioHoangDao.append("\n")
             } else {
@@ -110,16 +202,31 @@ class MonthFragment : Fragment() {
 
     }
 
-    fun formatDate(dmy: DayMonthYearModel): String {
+
+    fun formatDateSolar(dmy: DayMonthYearModel): String {
         var dateformat = ""
         if (dmy.mm < 10 && dmy.dd < 10) {
-            dateformat = "0${dmy.dd}/0${dmy.mm}/${dmy.yyyy}"
+            dateformat = "0${dmy.dd} Tháng 0${dmy.mm}, ${dmy.yyyy}"
         } else if (dmy.mm < 10) {
-            dateformat = "${dmy.dd}/0${dmy.mm}/${dmy.yyyy}"
+            dateformat = "${dmy.dd} Tháng 0${dmy.mm}, ${dmy.yyyy}"
         } else if (dmy.dd < 10) {
-            dateformat = "0${dmy.dd}/${dmy.mm}/${dmy.yyyy}"
+            dateformat = "0${dmy.dd} Tháng ${dmy.mm}, ${dmy.yyyy}"
         } else {
-            dateformat = "${dmy.dd}/${dmy.mm}/${dmy.yyyy}"
+            dateformat = "${dmy.dd} Tháng ${dmy.mm}, ${dmy.yyyy}"
+        }
+        return dateformat
+    }
+
+    fun formatDateLunar(dmy: DayMonthYearModel): String {
+        var dateformat = ""
+        if (dmy.mm < 10 && dmy.dd < 10) {
+            dateformat = "0${dmy.dd} Tháng 0${dmy.mm} Âm lịch"
+        } else if (dmy.mm < 10) {
+            dateformat = "${dmy.dd} Tháng 0${dmy.mm} Âm lịch"
+        } else if (dmy.dd < 10) {
+            dateformat = "0${dmy.dd} Tháng ${dmy.mm} Âm lịch"
+        } else {
+            dateformat = "${dmy.dd} Tháng ${dmy.mm} Âm lịch"
         }
         return dateformat
     }
