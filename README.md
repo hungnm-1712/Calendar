@@ -1,0 +1,3 @@
+# Lunar-Calendar
+The Android app was written when i started to learn programming and kotlin.
+This application allows to see the lunar day, zodiac day, zodiac hour ...
